@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload</title>
+</head>
+<body>
+    {% if a_wrong %}
+        <h4>
+            <span style="color: crimson">
+                <strong>
+                    Invalid alias, please enter another one.
+                </strong>
+            </span>
+        </h4>
+    {% endif %}
+    {% if p_wrong %}
+        <h4>
+            <span style="color: crimson">
+                <strong>
+                    Invalid password, please enter another one.
+                </strong>
+            </span>
+        </h4>
+    {% endif %}
+    {% if empty_file %}
+        <h4>
+            <span style="color: crimson">
+                <strong>
+                    Please select a file to upload.
+                </strong>
+            </span>
+        </h4>
+    {% endif %}
+    <form action="/upload/" method="post" enctype="multipart/form-data">
+        Your can set alias and password here. If you leave them blank, system will generate a random password for you<br>
+        Alias (7-32 Characters): <input type="text" name="Alias"><br>
+        Password (4-6 Characters): <input type="text" name="Password"><br>
+        <input type="file" name="file" />
+        <input type="submit" name="submit" value="Upload" />
+    </form>
+    <p><a href="http://share.zzrcxb.me/">share.zzrcxb.me</a></p>
+</body>
+</html>

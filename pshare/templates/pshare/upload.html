@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File uploaded</title>
+</head>
+<body>
+    <h1>File uploaded successfully!</h1>
+    <p>
+        {% if not has_alias %}
+            Link for share or download the file: <br>
+            <a href="http://share.zzrcxb.me/{{ hash_value }}">http://share.zzrcxb.me/{{ hash_value }}</a>
+        {% else %}
+            Links for share or download the file: <br>
+            <a href="http://share.zzrcxb.me/{{ alias }}">http://share.zzrcxb.me/{{ alias }}</a><br>
+            <a href="http://share.zzrcxb.me/{{ hash_value }}">http://share.zzrcxb.me/{{ hash_value }}</a>
+        {% endif %}
+    </p>
+    <p>
+        Your password: <span style="color: green">{{ passwd }}</span><br>
+        <span style="color: orangered">Important! Don't lose your password, or you won't have accessibility to this file anymore</span>
+    </p>
+</body>
+</html>

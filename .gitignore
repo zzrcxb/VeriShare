@@ -1,0 +1,7 @@
+*.pyc
+*.cnf
+data/
+*.exe
+*.txt
+.idea/
+.vscode/
