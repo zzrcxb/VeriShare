@@ -1,24 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>File uploaded</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style class="text-nowrap">.text-nowrap {
+        white-space: nowrap;
+    }</style>
 </head>
 <body>
-    <h1>File uploaded successfully!</h1>
-    <p>
+<div class="container">
+    <div class="jumbotron">
+        <h2>Welcome to <a href="http://verishare.org/upload">verishare.org</a></h2>
+        <p>Upload file anonymously with secure code</p>
+    </div>
+    <div class="jumbotron">
+        <h2>Your file has been uploaded successfully!</h2>
         {% if not has_alias %}
-            Link for share or download the file: <br>
-            <a href="http://share.zzrcxb.me/{{ hash_value }}">http://share.zzrcxb.me/{{ hash_value }}</a>
+            <p>Share your file with following link:</p>
+            <div class="row">
+                <div class="col-sm-1" align="right">
+                    <strong>Link:</strong>
+                </div>
+                <div class="col-sm-5" align="left">
+                    <code>
+                        <a href="http://verishare.org/{{ hash_value }}"
+                           style="color: darkblue">http://verishare.org/{{ hash_value }}</a>
+                    </code>
+                </div>
+                <div class="col-sm-2" align="right">
+                    <strong>Secure Code:</strong>
+                </div>
+                <div class="col-sm-4" align="left">
+                    <code style="color: darkgreen">
+                        <strong>{{ passwd }}</strong>
+                    </code>
+                </div>
+            </div>
         {% else %}
-            Links for share or download the file: <br>
-            <a href="http://share.zzrcxb.me/{{ alias }}">http://share.zzrcxb.me/{{ alias }}</a><br>
-            <a href="http://share.zzrcxb.me/{{ hash_value }}">http://share.zzrcxb.me/{{ hash_value }}</a>
+            <p>Share your file with following links:</p>
+            <div class="row">
+                <div class="col-sm-1" align="right">
+                    <strong>Links:</strong>
+                </div>
+                <div class="col-sm-6" align="left">
+                    <code>
+                        <a href="http://verishare.org/{{ hash_value }}"
+                           style="color: darkblue">http://verishare.org/{{ hash_value }}</a>
+                    </code><br/>
+                    <code>
+                        <a href="http://verishare.org/{{ alias }}"
+                           style="color: darkblue">http://verishare.org/{{ alias }}</a>
+                    </code>
+                </div>
+                <div class="col-sm-2" align="right">
+                    <strong>Secure Code:</strong>
+                </div>
+                <div class="col-sm-3" align="left">
+                    <code style="color: darkgreen">
+                        <strong>{{ passwd }}</strong>
+                    </code>
+                </div>
+            </div>
         {% endif %}
-    </p>
-    <p>
-        Your password: <span style="color: green">{{ passwd }}</span><br>
-        <span style="color: orangered">Important! Don't lose your password, or you won't have accessibility to this file anymore</span>
-    </p>
+        <br/>
+        <div class="alert alert-warning">
+            <strong>Warning!</strong> DO NOT lose your secure code, or you will NOT access the file anymore.
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

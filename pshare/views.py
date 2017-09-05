@@ -20,9 +20,9 @@ import re
 def upload(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
-        alias = request.POST.get('Alias')
-        passwd = request.POST.get('Password')
-
+        alias = request.POST.get('alias')
+        passwd = request.POST.get('passwd')
+        print(alias, passwd)
         if len(passwd) == 0:
             passwd = passwd_generator(4)
 
@@ -72,30 +72,49 @@ def download(request, prefix):
 
     if request.method == 'POST':
         passwd = request.POST.get('Password')
+        is_preview = request.POST.get('Preview')
+        is_prevable = True
         if len(prefix) == 40:
             try:
+                files = UserFile.objects.filter(sha1=prefix)
+                if len(files) == 1 and guess_type(files[0].filename) not in prevable_list:
+                    is_prevable = False
                 file = get_object_or_404(UserFile, sha1=prefix, passwd=passwd)
+                if guess_type(file.filename) in prevable_list:
+                    is_prevable = True
             except MultipleObjectsReturned as e:
                 file = UserFile.objects.filter(sha1=prefix, passwd=passwd)[0]
             except Http404:
-                return render(request, 'pshare/download.html', dict(alias=prefix, wrong=True))
+                return render(request, 'pshare/download.html', dict(alias=prefix, wrong=True, prevable=is_prevable))
         else:
             try:
+                files = UserFile.objects.filter(alias=prefix)
+                if len(files) == 1 and guess_type(files[0].filename) not in prevable_list:
+                    is_prevable = False
                 file = get_object_or_404(UserFile, alias=prefix, passwd=passwd)
+                if guess_type(file.filename) in prevable_list:
+                    is_prevable = True
             except MultipleObjectsReturned as e:
                 logging.error(repr(e))
                 return HttpResponse(status=500)
             except Http404:
-                return render(request, 'pshare/download.html', dict(alias=prefix, wrong=True))
+                return render(request, 'pshare/download.html', dict(alias=prefix, wrong=True, prevable=is_prevable))
 
         hash_value = file.sha1
         path = os.path.join(DATA_PATH, hash_value[:2], hash_value[2:4], hash_value)
-        print(guess_type(file.filename), file.filename)
         f = open(path, 'rb')
-        return HttpResponse(content=f, content_type=guess_type(file.filename)[0])
+
+        if is_preview and is_prevable:
+            response = HttpResponse(content=f, content_type=guess_type(file.filename)[0])
+            response['Content-Disposition'] = 'inline; filename="%s"' % file.filename
+        else:
+            response = HttpResponse(content=f, content_type='application/octet-stream')
+            response['Content-Disposition'] = 'attachment; filename="%s"' % file.filename
+        return response
 
     else:
         is_file_existed = False
+        is_prevable = True
         # SHA-1
         if len(prefix) == 40:
             files = UserFile.objects.filter(sha1=prefix)
@@ -107,9 +126,12 @@ def download(request, prefix):
                 is_file_existed = True
 
         if is_file_existed:
-            return render(request, 'pshare/download.html', dict(alias=prefix, wrong=False))
+            if len(files) == 1 and guess_type(files[0].filename) not in prevable_list:
+                is_prevable = False
+            return render(request, 'pshare/download.html', dict(prefix=prefix, prevable=is_prevable, wrong=False))
         else:
             raise Http404(repr(prefix) + ' is not found, please check the SHA-1 or alias you inputted.')
+
 
 # rt_file = open(r'C:\Users\Neil\Desktop\survey.pdf', 'rb')
 # response = HttpResponse(content=rt_file, content_type='application/pdf')

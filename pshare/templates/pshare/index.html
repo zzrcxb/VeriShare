@@ -1,44 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Upload</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet prefetch'
+          href='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.css'>
+    <style>
+        .white-popup {
+            position: relative;
+            background: #FFF;
+            padding: 20px;
+            width: auto;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-    {% if a_wrong %}
-        <h4>
-            <span style="color: crimson">
-                <strong>
-                    Invalid alias, please enter another one.
-                </strong>
-            </span>
-        </h4>
-    {% endif %}
-    {% if p_wrong %}
-        <h4>
-            <span style="color: crimson">
-                <strong>
-                    Invalid password, please enter another one.
-                </strong>
-            </span>
-        </h4>
-    {% endif %}
-    {% if empty_file %}
-        <h4>
-            <span style="color: crimson">
-                <strong>
-                    Please select a file to upload.
-                </strong>
-            </span>
-        </h4>
-    {% endif %}
-    <form action="/upload/" method="post" enctype="multipart/form-data">
-        Your can set alias and password here. If you leave them blank, system will generate a random password for you<br>
-        Alias (7-32 Characters): <input type="text" name="Alias"><br>
-        Password (4-6 Characters): <input type="text" name="Password"><br>
-        <input type="file" name="file" />
-        <input type="submit" name="submit" value="Upload" />
-    </form>
-    <p><a href="http://share.zzrcxb.me/">share.zzrcxb.me</a></p>
+
+{% if empty_file %}
+    <script>alert("Please choose a file to upload")</script>
+{% endif %}
+
+<div class="container">
+    <div class="jumbotron">
+        <h2>Welcome to <a href="http://verishare.org/upload">verishare.org</a></h2>
+        <p>Upload file anonymously with secure code</p>
+    </div>
+    <div class="jumbotron">
+        <form class="form-horizontal" role="form" action="/upload/" method="post" enctype="multipart/form-data">
+            {% if a_wrong %}
+                <div class="form-group has-error">
+                    <label for="inputError" class="col-sm-2 control-label">Alias</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control " id="alias" name="alias"
+                               placeholder="7-32 characters">
+                        <div class="alert alert-danger" role="alert">
+                            Invalid alias
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <label for="alias" class="col-sm-2 control-label">Alias</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="alias" name="alias" placeholder="7-32 characters">
+                    </div>
+                </div>
+            {% endif %}
+            {% if p_wrong %}
+                <div class="form-group has-error">
+                    <label for="inputError" class="col-sm-2 control-label">Secure Code </label>
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="passwd" name="passwd"
+                               placeholder="4-6 characters [a-z, A-Z, 0-9]">
+                        <div class="alert alert-danger" role="alert">
+                            Invalid password
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <label for="passwd" class="col-sm-2 control-label">Secure Code</label>
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="passwd" name="passwd"
+                               placeholder="4-6 characters [a-z, A-Z, 0-9]">
+                    </div>
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="inputfile" class="col-sm-2 control-label">Choose your file</label>
+                <div class="col-sm-10">
+                    <input type="file" id="inputfile" name="file">
+                </div>
+            </div>
+            <div align="right">
+                <label>By uploading, I agree to <a href="#user_agreement" class="open-popup-link">user
+                    agreement </a>.</label>
+            </div>
+            <div align="right">
+                <button type="submit" class="btn btn-info btn-lg">Agree and Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="jumbotron">
+        <h2 style="color: darkblue">What you can do with VeriShare</h2>
+        <p>
+            With this anonymous verification file host, you can upload a file and share it to other people with just
+            one link and one secure code. You can safely store a private file from being scraped by some bots or
+            visited by unwanted people.
+        </p>
+    </div>
+    <div class="jumbotron">
+        <h2 style="color: darkblue">How to use</h2>
+        <p>
+            It‘s pretty easy, enter the alias of your file and a secure code which is used to access it, then choose the
+            file you want to upload and click submit button (make sure you've read our User Agreement before uploading).
+            If you leave alias blank, then your file can only be accessed by entering its SHA-1 which is much safer. And
+            if you leave secure code blank, our system will generate a random one for you. It is recommended to use an
+            uncommon alias and secure code for safe reason.
+        </p>
+    </div>
+    <div class="jumbotron">
+        <h2 style="color: darkblue">FAQ</h2>
+        <ol>
+            <h3>
+                <li>How to share file safely?</li>
+            </h3>
+            <p>Uploading file without alias or choose an uncommon alias can make it harder for unauthorized person to
+                access the file.</p>
+            <h3>
+                <li>Why I cannot preview video files?</li>
+            </h3>
+            <p>It depends on which explorer you are using. Sometimes, you need to install some extra decoders to preview
+                video files</p>
+        </ol>
+    </div>
+
+    <div id="user_agreement" class="white-popup mfp-hide">
+        <h3>User Agreement</h3>
+        <ol>
+            <li>Accessibility. This is an open-source project under
+                <a href="https://raw.githubusercontent.com/zzrcxb/VeriShare/master/LICENSE">GPL v3.0</a> license.
+            </li>
+            <li>Liability. This site is free to use. So, we don't guarantee the liability. The site may be unavailable
+                under these conditions including but not limited to being attacked, physical machine failure, and
+                under maintenance.
+            </li>
+            <li>Privacy. Your privacy is important to us, we won't collect any data from your uploads, but we cannot
+                guarantee your files are absolutely safe.
+            </li>
+            <li>
+                Restrictions. Any file contains including but not limited to pornography, terrorism, violence and
+                illegal trades will be deleted without informing.
+            </li>
+        </ol>
+    </div>
+
+    <script src='https://production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js'></script>
+    <script>
+        $('.open-popup-link').magnificPopup({
+            type: 'inline',
+            midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+        });
+    </script>
+</div>
 </body>
 </html>

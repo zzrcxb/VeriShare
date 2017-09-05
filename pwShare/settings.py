@@ -21,12 +21,12 @@ DATA_PATH = os.path.join(BASE_DIR, 'data')
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = '_yhc6=04ug593(3%+nss6q=&w9a2#urv5n2=+=be67%&!wx7le'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get('HOSTNAME', 'localhost')]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition

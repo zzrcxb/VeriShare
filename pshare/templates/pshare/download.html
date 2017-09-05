@@ -1,24 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Download</title>
+    <title>File uploaded</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style class="text-nowrap">.text-nowrap {
+        white-space: nowrap;
+    }</style>
 </head>
 <body>
-    {% if wrong %}
-        <h4>
-            <span style="color: crimson">
-                <strong>
-                    Wrong password, please check again.
-                </strong>
-            </span>
-        </h4>
-    {% endif %}
+<div class="container">
+    <div class="jumbotron">
+        <h2>Welcome to <a href="http://verishare.org/upload">verishare.org</a></h2>
+        <p>Upload file anonymously with secure code</p>
+    </div>
+    <div class="jumbotron">
+        <h2>Please enter the secure code to download "<span style="color: #0000d0">{{ prefix }}</span>"</h2> <br/>
 
-    Enter password to download "{{ alias }}"
-    <form action="/{{ alias }}/" method="post" enctype="multipart/form-data">
-        Password: <input type="password" name="Password"><br>
-        <input type="submit" name="download" value="Download" />
-    </form>
+        <form class="form-horizontal" role="form" action="/{{ prefix }}/" method="POST"
+              enctype="multipart/form-data">
+            {% if wrong %}
+                <div class="form-group has-error">
+                    <label for="inputError" class="col-sm-2 control-label">Secure Code</label>
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="passwd" name="Password">
+                        <div class="alert alert-danger" role="alert">
+                            Wrong secure code!
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <label for="alias" class="col-sm-2 control-label">Secure Code</label>
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="passwd" name="Password">
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if prevable %}
+                <div align="right">
+                    <div class="btn-group">
+                        <button type="submit" name="Preview" class="btn btn-lg" value="preview">Preview</button>
+                        <button type="submit" name="Download" class="btn btn-info btn-lg" value="download">Download
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    We cannot preview this type of file, please download it.
+                </div>
+                <div align="right">
+                    <div class="btn-group">
+                        <button type="button" name="Preview" class="btn btn-lg disabled" value="preview">Preview
+                        </button>
+                        <button type="submit" name="Download" class="btn btn-info btn-lg" value="download">Download
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
 </body>
 </html>
