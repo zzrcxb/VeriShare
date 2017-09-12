@@ -1,12 +1,21 @@
 server {
     listen 80;
-    server_name verishare.org;
-    access_log /var/log/nginx/file/access.log;
-    error_log /var/log/nginx/file/error.log;
+    listen [::]:80;
+    server_name verishare.org share.zzrcxb.me;;
+    access_log /var/log/nginx/mysite/access.log;
+    error_log /var/log/nginx/mysite/error.log;
 
-    location = / {
+    location = /robots.txt {
+        root /data/mysite/static;
+    }
+
+    location = /favicon.ico {
+        root /data/mysite/static;
+    }
+
+    location / {
         proxy_pass http://localhost:8000/;
-        client_max_body_size 50M;
+        rewrite ^/?$ /upload/;
         proxy_set_header Host $host:$server_port;
         proxy_set_header X-Read-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

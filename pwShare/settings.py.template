@@ -15,22 +15,36 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DATA_PATH = os.path.join(BASE_DIR, 'data')
+###################################################################################
+# Things you need to change
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
+# PATH to store uploaded file
+DATA_PATH = os.path.join(BASE_DIR, 'data')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'default-key')
-RECAPTCHA_KEY = os.environ.get('RECAPTCHA_KEY', '6Ld-PjAUAAAAAKBoHaPdBluqC6-XAG_LcapTt1aS')
-SITE_KEY = os.environ.get('SITE_KEY', '6Ld-PjAUAAAAACmttlz_Y-f5YPivCakF8gqQvUox')
+RECAPTCHA_KEY = os.environ.get('RECAPTCHA_KEY', 'default-key')
+SITE_KEY = os.environ.get('SITE_KEY', 'default-key')
 MAX_FILE_SIZE = 20 # MB
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'DB_NAME',
+        'USER': 'DB_USER',
+        'PASSWORD': 'PASSWD',
+        'HOST': 'DB_DOMAIN or DB_IP',
+        'PORT': 'DB_PORT',
+    }
+}
+
+# End of things you need to change
+###################################################################################
 
 # Application definition
 
@@ -73,21 +87,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'pwShare.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pwshare',
-        'USER': 'root',
-        'PASSWORD': '1997122zzr',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
-    }
-}
 
 
 # Password validation

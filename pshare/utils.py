@@ -1,8 +1,11 @@
 import os
+import urllib
+import json
 
-from pwShare.settings import DATA_PATH
+from pwShare.settings import DATA_PATH, RECAPTCHA_KEY
 from random import sample
 from hashlib import sha1 as hash_method
+from functools import wraps
 
 
 def passwd_generator(length):
@@ -27,6 +30,34 @@ def save_file(file):
         list(map(f.write, file.chunks()))
 
     return hash_value
+
+def verify_recaptcha(func):
+    @wraps(func)
+    def decorator(request, *args, **kwargs):
+        request.recaptcha_is_valid = None
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        if request.method == 'POST':
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            data = dict(secret=RECAPTCHA_KEY, response=recaptcha_response)
+            data = urllib.parse.urlencode(data).encode()
+            req = urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = json.loads(response.read().decode())
+            if result.get('success', None):
+                request.recaptcha_is_valid = True
+            else:
+                request.recaptcha_is_valid = False
+
+        return func(request, *args, **kwargs)
+    return decorator
+
+
+bot_alerts = [
+    'Hey! Are you a bot trying to scrap my site?',
+    'DO NOT submit too fast',
+    'Was your mouse broken? Why did you click so fast?',
+    'If you keeping submit too fast, you will be banned!'
+]
 
 
 prevable_list = [

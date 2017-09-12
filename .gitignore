@@ -5,3 +5,4 @@ data/
 *.txt
 .idea/
 .vscode/
+pwShare/settings.py
