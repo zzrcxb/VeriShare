@@ -25,7 +25,7 @@ DATA_PATH = os.path.join(BASE_DIR, 'data')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'default-key')
 RECAPTCHA_KEY = os.environ.get('RECAPTCHA_KEY', 'default-key')
 SITE_KEY = os.environ.get('SITE_KEY', 'default-key')
-MAX_FILE_SIZE = 20 # MB
+MAX_FILE_SIZE = os.environ.get("MAX_FILE_SIZE", 20) # MB
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
