@@ -144,8 +144,3 @@ def download(request, prefix):
             return render(request, 'pshare/download.html', dict(prefix=prefix, prevable=is_prevable, site_key=SITE_KEY))
         else:
             raise Http404(repr(prefix) + ' is not found, please check the SHA-1 or alias you inputted.')
-
-# rt_file = open(r'C:\Users\Neil\Desktop\survey.pdf', 'rb')
-# response = HttpResponse(content=rt_file, content_type='application/pdf')
-# response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('test.pdf')
-# response['X-Sendfile'] = smart_str()
