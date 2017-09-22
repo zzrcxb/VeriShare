@@ -26,6 +26,8 @@ def upload(request):
                           dict(is_bot=True, bot_alert=random.choice(bot_alerts), site_key=SITE_KEY))
 
         file = request.FILES.get('file')
+        if not file:
+            return render(request, 'pshare/index.html', dict(empty_file=True, site_key=SITE_KEY))
         if len(file) > MAX_FILE_SIZE * 1024 * 1024:
             return render(request, 'pshare/index.html',
                           dict(greater_max_size=True, max_size=MAX_FILE_SIZE, site_key=SITE_KEY))

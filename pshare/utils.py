@@ -38,6 +38,7 @@ def verify_recaptcha(func):
         url = 'https://www.google.com/recaptcha/api/siteverify'
         if request.method == 'POST':
             recaptcha_response = request.POST.get('g-recaptcha-response')
+            print(recaptcha_response)
             data = dict(secret=RECAPTCHA_KEY, response=recaptcha_response)
             data = urllib.parse.urlencode(data).encode()
             req = urllib.request.Request(url, data=data)

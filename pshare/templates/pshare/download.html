@@ -49,22 +49,17 @@
             {% if prevable %}
                 <div align="right">
                     <div class="btn-group">
-                        <button type="submit" name="Preview" class="btn btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_prev" value="preview">Preview</button>
-                        <button type="submit" name="Download" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_no_prev" value="download">Download
+                        <button class="btn btn-lg g-recaptcha" data-sitekey="{{ site_key }}"
+                                data-callback="onSubmit_prev" value="preview">Preview
+                        </button>
+                        <button class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}"
+                                data-callback="onSubmit_no_prev" value="download">Download
                         </button>
                     </div>
                 </div>
             {% else %}
                 <div class="alert alert-warning" role="alert">
                     We cannot preview this type of file, please download it.
-                </div>
-                <div align="right">
-                    <div class="btn-group">
-                        <button type="button" name="Preview" class="btn btn-lg disabled g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_prev" value="preview">Preview
-                        </button>
-                        <button type="submit" name="Download" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_no_prev" value="download">Download
-                        </button>
-                    </div>
                 </div>
             {% endif %}
         </form>
@@ -79,8 +74,8 @@
             input.value = true;
             download_form.appendChild(input);
             download_form.submit();
-
         }
+
         function onSubmit_no_prev() {
             document.getElementById("download").submit();
         }
