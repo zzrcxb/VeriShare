@@ -1,0 +1,51 @@
+<h2>Your file has been uploaded successfully!</h2>
+<p>Share your file with following links:</p>
+<div class="row">
+    <div class="col-sm-1" align="right" style="font-size: medium">
+        <strong>Links:</strong>
+    </div>
+    <div class="col-sm-7" align="left">
+        <ul style="padding: 0; word-wrap: break-word">
+            <li>
+                <code>
+                    <a href="{{ long_link }}" id="long-link"
+                       style="color: darkblue; font-size: medium">{{ long_link }}</a>
+                </code>
+            </li>
+            {% if has_alias %}
+            <li>
+                <code>
+                    <a href="{{ short_link }}" id="short-link"
+                       style="color: darkblue; font-size: medium">{{ short_link }}</a>
+                </code>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="col-sm-2" align="right" style="font-size: medium">
+        <strong>Secure Code:</strong>
+    </div>
+    <div class="col-sm-2" align="left">
+        <code style="color: darkgreen; font-size: medium">
+            <strong id="secure-code">{{ passwd }}</strong>
+        </code>
+    </div>
+</div>
+<br/>
+<div class="alert alert-warning">
+    <strong>Warning!</strong> DO NOT lose your secure code, or you will NOT access the file anymore.
+</div>
+<div align="right">
+    <span style="font-size: large; color: #315392; padding-right: 10px">Click to copy</span>
+    <button class="btn btn-info" title="Copy long link" style="width: 60px"
+            onclick=copyToClipboard("#long-link")><i
+            class="glyphicon glyphicon-link"></i><i class="glyphicon glyphicon-link"></i></button>
+    {% if has_alias %}
+    <button class="btn btn-info" title="Copy short link" style="width: 60px"
+            onclick=copyToClipboard("#short-link")><i
+            class="glyphicon glyphicon-link"></i></button>
+    {% endif %}
+    <button class="btn btn-info" title="Copy secure code" style="width: 60px"
+            onclick=copyToClipboard("#secure-code")><i
+            class="glyphicon glyphicon-lock"></i></button>
+</div>

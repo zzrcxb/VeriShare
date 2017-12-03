@@ -1,104 +1,81 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Upload</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel='stylesheet prefetch'
-          href='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.css'>
-    <style>
-        .white-popup {
-            position: relative;
-            background: #FFF;
-            padding: 20px;
-            width: auto;
-            max-width: 500px;
-            margin: 20px auto;
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/core.css' %}">
     <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 
-{% if empty_file %}
-    <script>alert("Please choose a file to upload")</script>
-{% endif %}
-
-{% if is_bot %}
-    <script>alert("{{ bot_alert }}")</script>
-{% endif %}
-
-{% if greater_max_size %}
-    <script>alert("File's size should be less than {{ max_size }}MB")</script>
-{% endif %}
-
 <div class="container">
-    <div class="jumbotron">
-        <h2>Welcome to <a href="http://verishare.org/upload">verishare.org</a></h2>
-        <p>Upload file anonymously with secure code</p>
+    <div class="jumbotron" align="center">
+        <h2>Welcome to <a href="https://verishare.org/upload">VeriShare 2.0</a></h2>
+        <p>Share your files anonymously</p>
     </div>
-    <div class="jumbotron">
-        <form class="form-horizontal" id="upload" role="form" action="/upload/" method="post"
-              enctype="multipart/form-data"
-              autocomplete="off">
-            {% if a_wrong %}
-                <div class="form-group has-error">
-                    <label for="inputError" class="col-sm-2 control-label">Alias</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control " id="alias" name="alias"
-                               placeholder="7-32 characters">
-                        <div class="alert alert-danger" role="alert">
-                            Invalid alias
-                        </div>
-                    </div>
+
+    <div class="with-bottom-progress-bar">
+        <div class="jumbotron"  id="upload-result-container" style="margin-bottom: 0;">
+            <form class="form" action="/upload/" method="post" id="upload" enctype="multipart/form-data"
+                  autocomplete="off">
+                <div class="input-group form-group" id="alias-input-gp" style="padding-left: 10%; padding-bottom: 0">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-tag"></i></span>
+                    <input type="text" class="form-control" id="alias" name="alias"
+                           placeholder="Tag" pattern="[a-zA-Z0-9_-]{7,32}" style="max-width: 500px; z-index: inherit">
                 </div>
-            {% else %}
-                <div class="form-group">
-                    <label for="alias" class="col-sm-2 control-label">Alias</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="alias" name="alias" placeholder="7-32 characters">
-                    </div>
+
+                <div id="invalid-input-warner" style="padding-left: 12%; padding-top: 0; display: none">
+                    <ul>
+                        <li id="length-warner" class="valid">The length should between 7 and 32.</li>
+                        <li id="charset-warner" class="valid">The tag should only contain lowercase & uppercase letters,
+                            digits, underscores, and hyphens.
+                        </li>
+                    </ul>
                 </div>
-            {% endif %}
-            {% if p_wrong %}
-                <div class="form-group has-error">
-                    <label for="inputError" class="col-sm-2 control-label">Secure Code </label>
-                    <div class="col-sm-4">
-                        <input type="password" class="form-control" id="passwd" name="passwd"
-                               placeholder="4-6 characters [a-z, A-Z, 0-9]">
-                        <div class="alert alert-danger" role="alert">
-                            Invalid password
-                        </div>
-                    </div>
+
+                <div class="upload-file form-group" style="margin-top: 30px;">
+                    <input type="file" name="file" id="file" class="inputfile">
+                    <label for="file" class="upload-file-label">
+                        <span>
+                            <i class="glyphicon glyphicon-cloud-upload"
+                                 style="padding-right: 5px"></i>Choose a file<br>
+                            <span style="font-size: large">&nbsp&nbsp&nbsp&nbsp&nbsp(Maximum size: 20MB)</span>
+                        </span>
+                    </label>
                 </div>
-            {% else %}
-                <div class="form-group">
-                    <label for="passwd" class="col-sm-2 control-label">Secure Code</label>
-                    <div class="col-sm-4">
-                        <input type="password" class="form-control" id="passwd" name="passwd"
-                               placeholder="4-6 characters [a-z, A-Z, 0-9]">
-                    </div>
+
+                <div class="row form-group" style="padding-left:12%; height: 28px;">
+                <span style="font-size: large; display: table-cell; vertical-align: middle; padding-right: 15px">
+                    Share it
+                    <a href="#" data-toggle="tooltip"
+                       title="By toggling it, anyone can access this file by providing a long link without secure code."
+                       style="cursor: pointer; font-weight: 600">publicly</a>
+                </span>
+                    <label class="switch" style="display: table-cell; vertical-align: middle;">
+                        <input id="publicity" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
-            {% endif %}
-            <div class="form-group">
-                <label for="inputfile" class="col-sm-2 control-label">Choose your file</label>
-                <div class="col-sm-10">
-                    <input type="file" id="inputfile" name="file">
+
+                <div align="right">
+                    <label>By uploading, I agree to
+                        <a data-toggle="modal" data-target="#user-agreement">user
+                            agreement </a>.</label>
                 </div>
-            </div>
-            <div align="right">
-                <label>By uploading, I agree to <a href="#user_agreement" class="open-popup-link">user
-                    agreement </a>.</label>
-            </div>
-            <div align="right">
-                <button class="btn btn-info btn-lg g-recaptcha"
-                        data-sitekey="{{ site_key }}" data-callback='onSubmit'>Agree and
-                    Submit
-                </button>
-            </div>
-        </form>
+
+                <div align="right">
+                    <button type="button" class="btn btn-info btn-lg" id="upload-file-bt" onclick="upload_file()">Agree
+                        and
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="bottom-progress-bar"></div>
     </div>
     <div class="jumbotron">
         <h2 style="color: darkblue">What you can do with VeriShare</h2>
@@ -134,41 +111,51 @@
         </ol>
     </div>
 
-    <div id="user_agreement" class="white-popup mfp-hide">
-        <h3>User Agreement</h3>
-        <ol>
-            <li>Accessibility. This is an open-source project under
-                <a href="https://raw.githubusercontent.com/zzrcxb/VeriShare/master/LICENSE">GPL v3.0</a> license.
-            </li>
-            <li>Liability. This site is free to use. So, we don't guarantee the liability. The site may be unavailable
-                under these conditions including but not limited to being attacked, physical machine failure, and
-                under maintenance.
-            </li>
-            <li>Privacy. Your privacy is important to us, we won't collect any data from your uploads, but we cannot
-                guarantee your files are absolutely safe.
-            </li>
-            <li>
-                Restrictions. Any file contains including but not limited to pornography, terrorism, violence and
-                illegal trades will be deleted without informing.
-            </li>
-        </ol>
+    <div id="user-agreement" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>User Agreement</h3>
+                </div>
+                <div class="modal-body">
+                    <ol>
+                        <li>Accessibility. This is an open-source project under
+                            <a href="https://raw.githubusercontent.com/zzrcxb/VeriShare/master/LICENSE">GPL v3.0</a>
+                            license.
+                        </li>
+                        <li>Liability. This site is free to use. So, we don't guarantee the liability. The site may be
+                            unavailable
+                            under these conditions including but not limited to being attacked, physical machine
+                            failure,
+                            and
+                            under maintenance.
+                        </li>
+                        <li>Privacy. Your privacy is important to us, we won't collect any data from your uploads, but
+                            we
+                            cannot
+                            guarantee your files are absolutely safe.
+                        </li>
+                        <li>
+                            Restrictions. Any file contains including but not limited to pornography, terrorism,
+                            violence
+                            and
+                            illegal trades will be deleted without informing.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src='https://production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js'></script>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
     <script>
-        $('.open-popup-link').magnificPopup({
-            type: 'inline',
-            midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
-    <script>
-        function onSubmit() {
-            document.getElementById("upload").submit();
-        }
-    </script>
+
+    <!--<script src='https://www.google.com/recaptcha/api.js'></script>-->
+    <script src="{% static 'js/core.js' %}"></script>
+
 </div>
 </body>
 </html>

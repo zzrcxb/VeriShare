@@ -9,3 +9,4 @@ class UserFile(models.Model):
     uploaded_date = models.DateTimeField('Upload Datetime')
     life = models.IntegerField(default=0)
     sha1 = models.CharField(max_length=40)
+    public = models.BooleanField(default=False)

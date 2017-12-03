@@ -1,19 +1,24 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, StreamingHttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import MultipleObjectsReturned
+from django.utils.encoding import smart_str
 
 from .models import UserFile
-from pwShare.settings import DATA_PATH, MAX_FILE_SIZE, SITE_KEY
+from pwShare.settings import DATA_PATH, MAX_FILE_SIZE, SITE_KEY, MAX_PASSWD_GEN_TIME, BASE_DIR, SITE_BASE_URL
 from .utils import *
 
 from mimetypes import guess_type
 from datetime import datetime
 
+from IPython import embed
+
 import logging
 import random
+import time
 import re
+import os
 
 
 @require_http_methods(['POST', 'GET', ])
@@ -21,56 +26,64 @@ import re
 @verify_recaptcha
 def upload(request):
     if request.method == 'POST':
-        if not request.recaptcha_is_valid:
-            return render(request, 'pshare/index.html',
-                          dict(is_bot=True, bot_alert=random.choice(bot_alerts), site_key=SITE_KEY))
+        if not request.recaptcha_is_valid and False:
+            return JsonResponse(dict(status=False, data="Invalid re-captcha token! DO NOT try to scrap my site!"))
 
         file = request.FILES.get('file')
-        if not file:
-            return render(request, 'pshare/index.html', dict(empty_file=True, site_key=SITE_KEY))
-        if len(file) > MAX_FILE_SIZE * 1024 * 1024:
-            return render(request, 'pshare/index.html',
-                          dict(greater_max_size=True, max_size=MAX_FILE_SIZE, site_key=SITE_KEY))
+        alias = request.POST.get('alias', '')
+        public = dict(false=False, true=True).get(request.POST.get('public'), False)
+        passwd = passwd_generator(4)
 
-        alias = request.POST.get('alias')
-        passwd = request.POST.get('passwd')
+        if not file or len(file) > MAX_FILE_SIZE * 1024 * 1024:
+            return JsonResponse(dict(status=False, data="Don't you think I'll check your input on server side?"))
 
-        if len(passwd) == 0:
-            passwd = passwd_generator(4)
-
-        # Check alias, passwd and file
+        # Check alias
         alias_pattern = re.compile(r'^[^/]{7,32}$')
-        passwd_pattern = re.compile(r'^[0-9a-zA-Z]{4,6}$')
         if len(alias) > 0:
-            if re.match(alias_pattern, alias) is None or len(UserFile.objects.filter(alias=alias, passwd=passwd)):
-                return render(request, 'pshare/index.html', dict(a_wrong=True, p_wrong=False, site_key=SITE_KEY))
-
-        if re.match(passwd_pattern, passwd) is None:
-            return render(request, 'pshare/index.html', dict(a_wrong=False, p_wrong=True, site_key=SITE_KEY))
-
-        if file is None:
-            return render(request, 'pshare/index.html', dict(empty_file=True, site_key=SITE_KEY))
+            if re.match(alias_pattern, alias) is None:
+                return JsonResponse(dict(status=False, data="Don't you think I'll check your input on server side?"))
 
         hash_value = save_file(file)
+        check_hash = UserFile.objects.filter(sha1=hash_value)
+        if len(check_hash) > 0:
+            passwd = check_hash[0].passwd
+            if public != check_hash[0].public:
+                check_hash[0].public = public
+                check_hash[0].save()
+        else:
+            # Validate passwd
+            passwd_list = [_.passwd for _ in UserFile.objects.filter(alias=alias)]
+            start = time.time()
+            while passwd in passwd_list and time.time() - start < MAX_PASSWD_GEN_TIME:
+                if time.time() - start < MAX_PASSWD_GEN_TIME / 2:
+                    passwd = passwd_generator(4)
+                else:
+                    passwd = passwd_generator(6)
 
-        UserFile.objects.filter(alias=alias, passwd=passwd).delete()
+            if time.time() - start > MAX_PASSWD_GEN_TIME:
+                return JsonResponse(dict(status=False,
+                        data="You've chosen a really really popular tag, what a lucky guy~ Please try another tag"))
 
-        user_file = UserFile(
-            filename=file.name,
-            alias=alias if len(alias) > 0 else None,
+            user_file = UserFile(
+                filename=file.name,
+                alias=alias if len(alias) > 0 else '',
+                passwd=passwd,
+                sha1=hash_value,
+                uploaded_date=datetime.utcnow(),
+                public=public
+            )
+
+            user_file.save()
+
+        res_dict = dict(
+            has_alias=len(alias) > 0,
             passwd=passwd,
-            sha1=hash_value,
-            uploaded_date=datetime.utcnow(),
+            long_link=SITE_BASE_URL + hash_value + '/',
+            short_link=SITE_BASE_URL + alias + '/',
         )
-        user_file.save()
 
-        result = dict(
-            hash_value=hash_value,
-            has_alias=len(alias) != 0,
-            alias=alias,
-            passwd=passwd
-        )
-        return render(request, 'pshare/upload.html', result)
+        res = render(request, 'pshare/show_result.html', res_dict)
+        return JsonResponse(dict(status=True, data=smart_str(res.content)))
     else:
         return render(request, 'pshare/index.html', dict(site_key=SITE_KEY))
 
@@ -83,9 +96,11 @@ def download(request, prefix):
         prefix = prefix.lower()
 
     if request.method == 'POST':
-        if not request.recaptcha_is_valid:
+        if not request.recaptcha_is_valid and False:
+            print(request.recaptcha_is_valid)
             return render(request, 'pshare/download.html',
-                          dict(is_bot=True, bot_alert=random.choice(bot_alerts), site_key=SITE_KEY, prefix=prefix, prevable=True))
+                          dict(is_bot=True, bot_alert=random.choice(bot_alerts), site_key=SITE_KEY, prefix=prefix,
+                               prevable=True))
         passwd = request.POST.get('Password')
         is_preview = request.POST.get('Preview')
         is_prevable = True
@@ -100,7 +115,8 @@ def download(request, prefix):
             except MultipleObjectsReturned as e:
                 file = UserFile.objects.filter(sha1=prefix, passwd=passwd)[0]
             except Http404:
-                return render(request, 'pshare/download.html', dict(prefix=prefix, wrong=True, prevable=is_prevable, site_key=SITE_KEY))
+                return render(request, 'pshare/download.html',
+                              dict(prefix=prefix, wrong=True, prevable=is_prevable, site_key=SITE_KEY))
         else:
             try:
                 files = UserFile.objects.filter(alias=prefix)
@@ -113,17 +129,27 @@ def download(request, prefix):
                 logging.error(repr(e))
                 return HttpResponse(status=500)
             except Http404:
-                return render(request, 'pshare/download.html', dict(prefix=prefix, wrong=True, prevable=is_prevable, site_key=SITE_KEY))
+                return render(request, 'pshare/download.html',
+                              dict(prefix=prefix, wrong=True, prevable=is_prevable, site_key=SITE_KEY))
 
         hash_value = file.sha1
         path = os.path.join(DATA_PATH, hash_value[:2], hash_value[2:4], hash_value)
         f = open(path, 'rb')
+        chunk = []
+        while True:
+            data = f.read(4096)
+            if not data:
+                break
+            else:
+                chunk.append(data)
+
+        response = StreamingHttpResponse(chunk)
 
         if is_preview and is_prevable:
-            response = HttpResponse(content=f, content_type=guess_type(file.filename)[0])
+            response['Content-Type'] = guess_type(file.filename)[0]
             response['Content-Disposition'] = 'inline; filename="%s"' % file.filename
         else:
-            response = HttpResponse(content=f, content_type='application/octet-stream')
+            response['Content-Type'] = 'application/octet-stream'
             response['Content-Disposition'] = 'attachment; filename="%s"' % file.filename
         return response
 
@@ -146,3 +172,8 @@ def download(request, prefix):
             return render(request, 'pshare/download.html', dict(prefix=prefix, prevable=is_prevable, site_key=SITE_KEY))
         else:
             raise Http404(repr(prefix) + ' is not found, please check the SHA-1 or alias you inputted.')
+
+# rt_file = open(r'C:\Users\Neil\Desktop\survey.pdf', 'rb')
+# response = HttpResponse(content=rt_file, content_type='application/pdf')
+# response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('test.pdf')
+# response['X-Sendfile'] = smart_str()

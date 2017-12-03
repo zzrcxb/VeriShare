@@ -1,5 +1,7 @@
 *.pyc
 *.cnf
+__pycache__/
+
 data/
 *.exe
 *.txt
