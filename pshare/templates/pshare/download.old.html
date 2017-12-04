@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style class="text-nowrap">.text-nowrap {
+        white-space: nowrap;
+    }</style>
+</head>
+<body>
+
+{% if is_bot %}
+<script>alert("{{ bot_alert }}")</script>
+{% endif %}
+
+<div class="container">
+    <div class="jumbotron">
+        <h2>Welcome to <a href="https://verishare.org/upload">verishare.org</a></h2>
+        <p>Upload file anonymously with secure code</p>
+    </div>
+    <div class="jumbotron">
+        <h2>Please enter the secure code to download "<span style="color: #0000d0">{{ prefix }}</span>"</h2> <br/>
+
+        <form class="form-horizontal" role="form" action="/{{ prefix }}/" method="POST"
+              enctype="multipart/form-data" autocomplete="off" id="download">
+            {% if wrong %}
+                <div class="form-group has-error">
+                    <label for="inputError" class="col-sm-2 control-label">Secure Code</label>
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="passwd" name="Password">
+                        <div class="alert alert-danger" role="alert">
+                            Wrong secure code!
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <label for="alias" class="col-sm-2 control-label">Secure Code</label>
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="passwd" name="Password">
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if prevable %}
+                <div align="right">
+                    <div class="btn-group">
+                        <button id="Preview_bt" class="btn btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_prev" value="preview">Preview</button>
+                        <button id="Download_bt" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_no_prev" value="download">Download
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    We cannot preview this type of file, please download it.
+                </div>
+                <div align="right">
+                    <div class="btn-group">
+                        <button id="Preview_bt" class="btn btn-lg disabled g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_prev" value="preview">Preview
+                        </button>
+                        <button id="Download_bt" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_no_prev" value="download">Download</button>
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script>
+        function onSubmit_prev() {
+            var input = document.createElement('input');
+            var download_form = document.getElementById("download");
+            input.type = 'hidden';
+            input.name = 'Preview';
+            input.value = true;
+            download_form.appendChild(input);
+            download_form.submit();
+        }
+        function onSubmit_no_prev() {
+            document.getElementById("download").submit();
+        }
+    </script>
+</div>
+</body>
+</html>

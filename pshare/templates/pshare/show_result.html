@@ -5,7 +5,7 @@
         <strong>Links:</strong>
     </div>
     <div class="col-sm-7" align="left">
-        <ul style="padding: 0; word-wrap: break-word">
+        <ul style="padding: 0; word-wrap: break-word; list-style: none;">
             <li>
                 <code>
                     <a href="{{ long_link }}" id="long-link"
@@ -22,6 +22,7 @@
             {% endif %}
         </ul>
     </div>
+    {% if not public %}
     <div class="col-sm-2" align="right" style="font-size: medium">
         <strong>Secure Code:</strong>
     </div>
@@ -30,11 +31,30 @@
             <strong id="secure-code">{{ passwd }}</strong>
         </code>
     </div>
+    {% endif %}
 </div>
 <br/>
-<div class="alert alert-warning">
-    <strong>Warning!</strong> DO NOT lose your secure code, or you will NOT access the file anymore.
+{% if revoked %}
+<div class="alert alert-info">
+    <i class="glyphicon glyphicon-info-sign"></i> Previous secure code has been successfully revoked!
 </div>
+{% endif %}
+{% if revoked_pub %}
+<div class="alert alert-info">
+    <i class="glyphicon glyphicon-info-sign"></i> Public sharing file has been successfully revoked!
+</div>
+{% endif %}
+
+{% if public %}
+<div class="alert alert-success">
+    <i class="glyphicon glyphicon-info-sign"></i> You are sharing it publicly.
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <i class="glyphicon glyphicon-warning-sign"></i> DO NOT lose your secure code, or you will NOT access the file unless providing us the original file!
+</div>
+{% endif %}
+
 <div align="right">
     <span style="font-size: large; color: #315392; padding-right: 10px">Click to copy</span>
     <button class="btn btn-info" title="Copy long link" style="width: 60px"
@@ -45,7 +65,9 @@
             onclick=copyToClipboard("#short-link")><i
             class="glyphicon glyphicon-link"></i></button>
     {% endif %}
+    {% if not public %}
     <button class="btn btn-info" title="Copy secure code" style="width: 60px"
             onclick=copyToClipboard("#secure-code")><i
             class="glyphicon glyphicon-lock"></i></button>
+    {% endif %}
 </div>

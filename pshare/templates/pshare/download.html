@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,86 +6,80 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/core.css' %}">
     <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <style class="text-nowrap">.text-nowrap {
-        white-space: nowrap;
-    }</style>
 </head>
 <body>
 
-{% if is_bot %}
-<script>alert("{{ bot_alert }}")</script>
-{% endif %}
 
 <div class="container">
     <div class="jumbotron">
         <h2>Welcome to <a href="https://verishare.org/upload">verishare.org</a></h2>
-        <p>Upload file anonymously with secure code</p>
+        <p>Share your files anonymously</p>
     </div>
     <div class="jumbotron">
-        <h2>Please enter the secure code to download "<span style="color: #0000d0">{{ prefix }}</span>"</h2> <br/>
+        <h2>Please enter the secure code to download "<span style="color: #337ab7">{{ filename }}</span>"</h2> <br/>
 
         <form class="form-horizontal" role="form" action="/{{ prefix }}/" method="POST"
               enctype="multipart/form-data" autocomplete="off" id="download">
-            {% if wrong %}
-                <div class="form-group has-error">
-                    <label for="inputError" class="col-sm-2 control-label">Secure Code</label>
-                    <div class="col-sm-3">
-                        <input type="password" class="form-control" id="passwd" name="Password">
-                        <div class="alert alert-danger" role="alert">
-                            Wrong secure code!
-                        </div>
-                    </div>
+            <div class="input-group form-group" id="alias-input-gp" style="padding-left: 10%; padding-bottom: 0">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                <input type="password" class="form-control" id="passwd" name="passwd"
+                       placeholder="Secure Code" maxlength="6" style="max-width: 300px; z-index: inherit">
+            </div>
+            <div id="invalid-input-warner"
+                 style="margin-left: 8%; padding-top: 0; margin-bottom: 30px; max-width: 200px; display: none">
+                <div class="alert alert-danger alert-banner">
+                    Invalid Secure Code
                 </div>
-            {% else %}
-                <div class="form-group">
-                    <label for="alias" class="col-sm-2 control-label">Secure Code</label>
-                    <div class="col-sm-3">
-                        <input type="password" class="form-control" id="passwd" name="Password">
-                    </div>
+            </div>
+            <div id="preview-warner" class="alert alert-warning" role="alert"
+                 style="margin-left: 8%; max-width: 400px; display: none;">
+                We cannot preview this type of file, please download it.
+            </div>
+            <div align="right">
+                <div class="btn-group">
+                    <button id="preview-bt" class="btn btn-lg g-recaptcha" data-sitekey="{{ site_key }}"
+                            data-callback=submit_passwd_for_prev value="preview">Preview
+                    </button>
+                    <button id="download-bt" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}"
+                            data-callback=submit_passwd_for_down value="download">Download
+                    </button>
                 </div>
-            {% endif %}
-
-            {% if prevable %}
-                <div align="right">
-                    <div class="btn-group">
-                        <button id="Preview_bt" class="btn btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_prev" value="preview">Preview</button>
-                        <button id="Download_bt" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_no_prev" value="download">Download
-                        </button>
-                    </div>
-                </div>
-            {% else %}
-                <div class="alert alert-warning" role="alert">
-                    We cannot preview this type of file, please download it.
-                </div>
-                <div align="right">
-                    <div class="btn-group">
-                        <button id="Preview_bt" class="btn btn-lg disabled g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_prev" value="preview">Preview
-                        </button>
-                        <button id="Download_bt" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}" data-callback="onSubmit_no_prev" value="download">Download</button>
-
-
-                    </div>
-                </div>
-            {% endif %}
+            </div>
         </form>
     </div>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-    <script>
-        function onSubmit_prev() {
-            var input = document.createElement('input');
-            var download_form = document.getElementById("download");
-            input.type = 'hidden';
-            input.name = 'Preview';
-            input.value = true;
-            download_form.appendChild(input);
-            download_form.submit();
-        }
-        function onSubmit_no_prev() {
-            document.getElementById("download").submit();
-        }
-    </script>
 </div>
+
+<script src="{% static 'js/core.js' %}"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+<script>
+    var can_preview = "{{ prevable }}";
+    if (can_preview === "False") {
+        $("#preview-warner").css("display", "block");
+        $("#preview-bt").addClass("disabled");
+    }
+
+    var wrong_passwd = "{{ wrong_passwd }}";
+    if (wrong_passwd === "True") {
+        $("#invalid-input-warner").css("display", "block");
+    }
+
+    function submit_passwd_for_prev(token) {
+        var passwd_form = document.getElementById('download');
+        passwd_form.action = "/{{ prefix }}/preview/";
+        passwd_form.submit();
+    }
+
+    function submit_passwd_for_down(token) {
+        var passwd_form = document.getElementById('download');
+        passwd_form.action = "/{{ prefix }}/download/";
+        passwd_form.submit();
+    }
+</script>
+
+
 </body>
 </html>

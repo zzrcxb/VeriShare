@@ -56,8 +56,8 @@ function upload_file() {
             formData.append("alias", $("#alias").val());
             formData.append("file", file);
             formData.append("public", $("#publicity")[0].checked);
+            formData.append("g-recaptcha-response", grecaptcha.getResponse());
 
-            console.log(formData);
             // Upload
             $.ajax({
                 // Your server script to process the upload

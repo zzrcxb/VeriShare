@@ -19,22 +19,24 @@
     </div>
 
     <div class="with-bottom-progress-bar">
-        <div class="jumbotron"  id="upload-result-container" style="margin-bottom: 0;">
+        <div class="jumbotron" id="upload-result-container" style="margin-bottom: 0;">
             <form class="form" action="/upload/" method="post" id="upload" enctype="multipart/form-data"
                   autocomplete="off">
                 <div class="input-group form-group" id="alias-input-gp" style="padding-left: 10%; padding-bottom: 0">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-tag"></i></span>
-                    <input type="text" class="form-control" id="alias" name="alias"
+                    <input type="text" class="form-control" id="alias" name="alias" maxlength="32"
                            placeholder="Tag" pattern="[a-zA-Z0-9_-]{7,32}" style="max-width: 500px; z-index: inherit">
                 </div>
 
                 <div id="invalid-input-warner" style="padding-left: 12%; padding-top: 0; display: none">
-                    <ul>
-                        <li id="length-warner" class="valid">The length should between 7 and 32.</li>
-                        <li id="charset-warner" class="valid">The tag should only contain lowercase & uppercase letters,
-                            digits, underscores, and hyphens.
-                        </li>
-                    </ul>
+                    <div id="length-warner" class="valid alert alert-danger alert-banner">The length should between 7
+                        and 32.
+                    </div>
+                    <div id="charset-warner" class="valid alert alert-danger alert-banner">The tag should only contain
+                        lowercase &
+                        uppercase letters,
+                        digits, underscores, and hyphens.
+                    </div>
                 </div>
 
                 <div class="upload-file form-group" style="margin-top: 30px;">
@@ -42,7 +44,7 @@
                     <label for="file" class="upload-file-label">
                         <span>
                             <i class="glyphicon glyphicon-cloud-upload"
-                                 style="padding-right: 5px"></i>Choose a file<br>
+                               style="padding-right: 5px"></i>Choose a file<br>
                             <span style="font-size: large">&nbsp&nbsp&nbsp&nbsp&nbsp(Maximum size: 20MB)</span>
                         </span>
                     </label>
@@ -68,9 +70,9 @@
                 </div>
 
                 <div align="right">
-                    <button type="button" class="btn btn-info btn-lg" id="upload-file-bt" onclick="upload_file()">Agree
-                        and
-                        Submit
+                    <button type="button" class="g-recaptcha btn btn-info btn-lg" data-sitekey="{{ site_key }}"
+                            data-callback="upload_file" data-size="invisible" id="upload-file-bt">Agree
+                        and Submit
                     </button>
                 </div>
             </form>
@@ -147,13 +149,19 @@
         </div>
     </div>
 
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
     <script>
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });
+
+        function fake_upload() {
+            console.log(grecaptcha.getResponse());
+            $("#upload").submit();
+        }
     </script>
 
-    <!--<script src='https://www.google.com/recaptcha/api.js'></script>-->
     <script src="{% static 'js/core.js' %}"></script>
 
 </div>

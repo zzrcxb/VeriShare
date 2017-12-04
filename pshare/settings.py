@@ -14,3 +14,14 @@ INDEX_TP_DFT = dict(
     a_wrong=False,
     p_wrong=False,
 )
+
+
+class REFER_PROTECTOR:
+    TIME_LIMIT = 1 # min
+    ACCESS_LIMIT = 3
+    WHITE_LIST = [
+        'verishare.org',
+        'localhost'
+    ]
+    BLACK_LIST = []
+    records = dict()

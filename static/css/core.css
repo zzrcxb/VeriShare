@@ -7,20 +7,6 @@ a:hover {
     display: none;
 }
 
-ul {
-    list-style: none;
-}
-
-li.invalid {
-    color: #a94442;
-}
-
-li.invalid:before {
-    position: relative;
-    left: -15px;
-    content: "✖";
-}
-
 .with-bottom-progress-bar {
     margin-bottom: 30px;
 }
@@ -33,8 +19,14 @@ li.invalid:before {
     width: 0;
 }
 
-#invalid-input-warner {
-    font-size: large;
+.alert-banner:before {
+    position: relative;
+    left: -5px;
+    content: "✖";
+}
+
+.alert-banner {
+    margin-bottom: 10px;
 }
 
 .upload-file {
@@ -68,6 +60,16 @@ li.invalid:before {
     height: 200px;
     padding-left: 5%;
     padding-right: 5%;
+}
+
+.passwd-wrong:before {
+    position: relative;
+    left: -15px;
+    content: "✖";
+}
+
+.passwd-wrong {
+    color: #a94442;
 }
 
 /* The switch - the box around the slider */
