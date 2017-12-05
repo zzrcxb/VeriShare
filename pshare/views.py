@@ -208,7 +208,7 @@ def download(request, prefix, method):
 def return_file(file, guess=False, stream=False):
     hash_value = file.sha1
     if stream:
-        path = os.path.join('/data/VeriShare/data/', hash_value[:2], hash_value[2:4], hash_value)
+        path = os.path.join(DATA_PATH, hash_value[:2], hash_value[2:4], hash_value)
         chunk_size = 8192
         response = StreamingHttpResponse(FileWrapper(open(path, 'rb'), chunk_size))
         response['Content-Length'] = os.path.getsize(path)
