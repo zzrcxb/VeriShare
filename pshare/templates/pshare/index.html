@@ -82,19 +82,16 @@
     <div class="jumbotron">
         <h2 style="color: darkblue">What you can do with VeriShare</h2>
         <p>
-            With this anonymous verification file host, you can upload a file and share it to other people with just
-            one link and one secure code. You can safely store a private file from being scraped by some bots or
-            visited by unwanted people.
+            With this anonymous file host, you can upload a file and share it with other people, privately or publicly.
+             You can safely store a private file from being scraped by bots or visited by unwanted people. Please read 
+             <a href="#how-to-use">How to use</a> for more information.
         </p>
     </div>
     <div class="jumbotron">
         <h2 style="color: darkblue">How to use</h2>
         <p>
-            It‘s pretty easy, enter the alias of your file and a secure code which is used to access it, then choose the
-            file you want to upload and click submit button (make sure you've read our User Agreement before uploading).
-            If you leave alias blank, then your file can only be accessed by entering its SHA-1 which is much safer. And
-            if you leave secure code blank, our system will generate a random one for you. It is recommended to use an
-            uncommon alias and secure code for safe reason.
+            Normally, files are shared linked to your account. It will be hard if you want to share a file with people doesn't have the account. By using our file host service, any authorized people can access your private file without any annoying registration. Unlike files hosted by static file server on your homepage which may be provided by your institution, our service can protect you from web-scraper or unwanted visitors. There is two kind of permission, private and public. Public files can only be accessed by providing their SHA-1 value (i.e., long link), it will discourage search engine to find them. Private files can be accessed by providing its tag (i.e., short link) or SHA-1, and an additional secure code.
+            If you want to upload a public file, check the "Share it publicly" switcher, choose a file and upload it. If you want to upload a private file, we allow you to bind a tag to it. After uploading a private file, you will receive a short link (only appear when you bind a tag), a long link, and secure code. It should be mentioned that the secure code only appears <strong>ONE TIME</strong>. So, please remember the secure code.
         </p>
     </div>
     <div class="jumbotron">
@@ -104,7 +101,15 @@
                 <li>How to share file safely?</li>
             </h3>
             <p>Uploading file without alias or choose an uncommon alias can make it harder for unauthorized person to
-                access the file.</p>
+                access the file. Make sure you DO NOT check "Share it publicly."</p>
+            <h3>
+                <li>What should I do if I lost my secure code?</li>
+            </h3>
+            <p>You need to enter the tag and upload an exactly same file to us; we will reset the secure code associated with your tag.</p>
+            <h3>
+                <li>How can I change a public file into private?</li>
+            </h3>
+            <p>Upload an exactly same file to us and DO NOT check "Share it publicly." Be attention, if you uploaded it as the private file before. Using the tag (this file bound to it before) or without tag (it has been uploaded without tag before) will cause the server revoke previous secure code. People CANNOT access a private file with a revoked secure code.</p>
             <h3>
                 <li>Why I cannot preview video files?</li>
             </h3>

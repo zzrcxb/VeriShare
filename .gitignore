@@ -1,5 +1,6 @@
 *.pyc
 *.cnf
+*.json
 __pycache__/
 
 data/
