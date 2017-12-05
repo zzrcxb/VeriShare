@@ -12,8 +12,6 @@ from .utils import *
 from mimetypes import guess_type
 from datetime import datetime
 
-from IPython import embed
-
 import logging
 import random
 import time
@@ -130,6 +128,9 @@ def download_page(request, prefix):
             filename = files[0].filename
         else:
             raise Http404
+        for file in files:
+            if file.public == True:
+                return redirect('/%s/download/' % prefix) # Direct download public files
     else:
         files = UserFile.objects.filter(alias=prefix)
         if len(files) > 0:
@@ -137,7 +138,8 @@ def download_page(request, prefix):
         else:
             raise Http404
 
-    if len(files) == 1 and guess_type(files[0].filename)[0] not in prevable_list:
+    filenames = list({_.filename for _ in files})
+    if len(filenames) == 1 and guess_type(filenames[0])[0] not in prevable_list:
         is_prevable = False
 
     return render(request, 'pshare/download.html',
@@ -167,7 +169,11 @@ def download(request, prefix, method):
         if len(files) == 0:
             raise Http404
         else:
-            is_prevable = not (len(files) == 1 and guess_type(files[0].filename)[0] in prevable_list)
+            filenames = list({_.filename for _ in files})
+            is_prevable = True
+            if len(filenames) == 1 and guess_type(filenames[0])[0] not in prevable_list:
+                is_prevable = False
+
             file = None
             for _ in files:
                 if _.passwd == passwd:
@@ -186,14 +192,13 @@ def download(request, prefix, method):
             return redirect('/%s/' % prefix)
 
         files = UserFile.objects.filter(**enquiry_params)
-        if len(files) == 1:
-            return Http404("Not found")
-        file = files[0]
-
-        if not file.public:
+        if len(files) == 0:
+            raise Http404
+        print(any({_.public for _ in files}))
+        if not any({_.public for _ in files}):
             return redirect('/%s/' % prefix)
 
-    response = return_file(file, guess=method == 'preview')
+    response = return_file(files[0], guess=method == 'preview')
     return response
 
 
@@ -202,9 +207,11 @@ def return_file(file, guess=False):
     path = os.path.join('/data/', hash_value[:2], hash_value[2:4], hash_value)
     response = HttpResponse()
     response['X-Accel-Redirect'] = path
-    response['Content-Disposition'] = 'attachment; filename="%s"' % file.filename
     if guess:
+        response['Content-Disposition'] = 'inline; filename="%s"' % file.filename
         response['Content-Type'] = guess_type(file.filename)[0]
+        print(guess_type(file.filename)[0])
     else:
+        response['Content-Disposition'] = 'attachment; filename="%s"' % file.filename
         response['Content-Type'] = 'application/octet-stream'
     return response

@@ -1,7 +1,7 @@
 server {
     listen 80;
     listen [::]:80;
-    server_name verishare.org share.zzrcxb.me;
+    server_name apre;
     access_log /var/log/nginx/verishare/access.log;
     error_log /var/log/nginx/verishare/error.log;
 
@@ -12,6 +12,16 @@ server {
 
     location ~ ^/favicon.ico/?$ {
         root /data/verishare/static;
+        try_files /$uri = 404;
+    }
+
+    location /data/ {
+        internal;
+        root /data/VeriShare;
+    }
+
+    location /static/ {
+        root /data/VeriShare;
         try_files /$uri = 404;
     }
 

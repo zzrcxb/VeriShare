@@ -90,7 +90,7 @@ def verify_recaptcha(func):
         url = 'https://www.google.com/recaptcha/api/siteverify'
         if request.method == 'POST':
             recaptcha_response = request.POST.get('g-recaptcha-response')
-            if not recaptcha_response:
+            if recaptcha_response:
                 data = dict(secret=RECAPTCHA_KEY, response=recaptcha_response)
                 print(data)
                 data = urllib.parse.urlencode(data).encode()

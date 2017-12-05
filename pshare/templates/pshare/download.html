@@ -21,7 +21,7 @@
     <div class="jumbotron">
         <h2>Please enter the secure code to download "<span style="color: #337ab7">{{ filename }}</span>"</h2> <br/>
 
-        <form class="form-horizontal" role="form" action="/{{ prefix }}/" method="POST"
+        <form class="form-horizontal" role="form" method="POST"
               enctype="multipart/form-data" autocomplete="off" id="download">
             <div class="input-group form-group" id="alias-input-gp" style="padding-left: 10%; padding-bottom: 0">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
@@ -39,21 +39,44 @@
                 We cannot preview this type of file, please download it.
             </div>
             <div align="right">
-                <div class="btn-group">
-                    <button id="preview-bt" class="btn btn-lg g-recaptcha" data-sitekey="{{ site_key }}"
-                            data-callback=submit_passwd_for_prev value="preview">Preview
-                    </button>
-                    <button id="download-bt" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ site_key }}"
-                            data-callback=submit_passwd_for_down value="download">Download
-                    </button>
-                </div>
+                <button id="preview-bt" class="btn btn-lg g-recaptcha"  value="preview" style="width: 120px">Preview</button>
+                <button id="download-bt" class="btn btn-info btn-lg g-recaptcha"  value="download" style="width: 120px">Download</button>
             </div>
         </form>
     </div>
 </div>
 
+<script src='https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit' async defer></script>
+
+<script>
+    function onloadCallback() {
+        $(".g-recaptcha").each(function() {
+            var object = $(this);
+            grecaptcha.render(object.attr("id"), {
+                "sitekey" : "{{ site_key }}",
+                "callback" : function(token) {
+                    object.parents('form').find(".g-recaptcha-response").val(token);
+                    var url;
+                    if (object.attr('value') === "preview")
+                        url = "/{{ prefix }}/preview/";
+                    else
+                        url = "/{{ prefix }}/download/";
+
+                    if ($("#passwd").val().length === 0) {
+                        alert("Please provide secure code!");
+                        location.reload();
+                    }
+                    else {
+                        object.parents('form').attr('action', url).submit();
+                        grecaptcha.reset();
+                    }
+                }
+            });
+        });
+    }
+</script>
+
 <script src="{% static 'js/core.js' %}"></script>
-<script src='https://www.google.com/recaptcha/api.js'></script>
 
 <script>
     var can_preview = "{{ prevable }}";
@@ -66,20 +89,7 @@
     if (wrong_passwd === "True") {
         $("#invalid-input-warner").css("display", "block");
     }
-
-    function submit_passwd_for_prev(token) {
-        var passwd_form = document.getElementById('download');
-        passwd_form.action = "/{{ prefix }}/preview/";
-        passwd_form.submit();
-    }
-
-    function submit_passwd_for_down(token) {
-        var passwd_form = document.getElementById('download');
-        passwd_form.action = "/{{ prefix }}/download/";
-        passwd_form.submit();
-    }
 </script>
-
 
 </body>
 </html>

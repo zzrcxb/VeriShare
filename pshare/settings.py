@@ -21,7 +21,8 @@ class REFER_PROTECTOR:
     ACCESS_LIMIT = 3
     WHITE_LIST = [
         'verishare.org',
-        'localhost'
+        'localhost',
+        'apre'
     ]
     BLACK_LIST = []
     records = dict()
