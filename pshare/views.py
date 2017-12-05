@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import MultipleObjectsReturned
 from django.utils.encoding import smart_str
+from wsgiref.util import FileWrapper
 
 from .models import UserFile
 from pwShare.settings import DATA_PATH, MAX_FILE_SIZE, SITE_KEY, BASE_DIR, SITE_BASE_URL
@@ -199,15 +200,23 @@ def download(request, prefix, method):
         if not any({_.public for _ in files}):
             return redirect('/%s/' % prefix)
 
-    response = return_file(files[0], guess=method == 'preview')
+    response = return_file(files[0], guess=method == 'preview', stream=method == 'preview')
+    print("return preview file")
     return response
 
 
-def return_file(file, guess=False):
+def return_file(file, guess=False, stream=False):
     hash_value = file.sha1
-    path = os.path.join('/data/', hash_value[:2], hash_value[2:4], hash_value)
-    response = HttpResponse()
-    response['X-Accel-Redirect'] = path
+    if stream:
+        path = os.path.join('/data/VeriShare/data/', hash_value[:2], hash_value[2:4], hash_value)
+        chunk_size = 8192
+        response = StreamingHttpResponse(FileWrapper(open(path, 'rb'), chunk_size))
+        response['Content-Length'] = os.path.getsize(path)
+    else:
+        path = os.path.join('/data/', hash_value[:2], hash_value[2:4], hash_value)
+        response = HttpResponse()
+        response['X-Accel-Redirect'] = path
+
     if guess:
         response['Content-Disposition'] = 'inline; filename="%s"' % file.filename
         response['Content-Type'] = guess_type(file.filename)[0]
