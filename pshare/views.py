@@ -6,8 +6,9 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.utils.encoding import smart_str
 
 from .models import UserFile
-from pwShare.settings import DATA_PATH, MAX_FILE_SIZE, SITE_KEY, MAX_PASSWD_GEN_TIME, BASE_DIR, SITE_BASE_URL
+from pwShare.settings import DATA_PATH, MAX_FILE_SIZE, SITE_KEY, BASE_DIR, SITE_BASE_URL
 from .utils import *
+from .settings import MAX_PASSWD_GEN_TIME
 
 from mimetypes import guess_type
 from datetime import datetime

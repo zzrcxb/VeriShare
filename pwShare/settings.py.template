@@ -10,41 +10,48 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
+
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-###################################################################################
-# Things you need to change
+# ================== Start of your settings====================
 
-# PATH to store uploaded file
 DATA_PATH = os.path.join(BASE_DIR, 'data')
+TMP_PATH = os.path.join(BASE_DIR, 'data', 'tmp')
+if not os.path.exists(DATA_PATH):
+    os.makedirs(DATA_PATH)
+
+if not  os.path.exists(TMP_PATH):
+    os.makedirs(TMP_PATH)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'default-key')
-RECAPTCHA_KEY = os.environ.get('RECAPTCHA_KEY', 'default-key')
-SITE_KEY = os.environ.get('SITE_KEY', 'default-key')
-MAX_FILE_SIZE = os.environ.get("MAX_FILE_SIZE", 20) # MB
+RECAPTCHA_KEY = os.environ.get('RECAPTCHA_KEY', 'Your re-Captcha key')
+SITE_KEY = os.environ.get('SITE_KEY', 'Your re-Captcha site key')
+MAX_FILE_SIZE = int(os.environ.get("MAX_FILE_SIZE", "20")) # MB
+SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "http://example.com/")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost',]
+
+# Database
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'DB_NAME',
-        'USER': 'DB_USER',
-        'PASSWORD': 'PASSWD',
-        'HOST': 'DB_DOMAIN or DB_IP',
-        'PORT': 'DB_PORT',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
-# End of things you need to change
-###################################################################################
+# ================== End of your settings====================
 
 # Application definition
 
@@ -125,6 +132,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
