@@ -190,6 +190,8 @@ def download(request, prefix, method):
         enquiry_params = dict()
         if len(prefix) == 40:
             enquiry_params['sha1'] = prefix
+            if prefix in ['cdf141de37a5c7a798770248ac03bc1333bd06fa', 'c00cc97fddb383afa60bcede918921d4d5d88949']:
+                print('===========Cong!==========\n\n\n' + prefix + "\n\n\n===========================")
         else:
             return redirect('/%s/' % prefix)
 

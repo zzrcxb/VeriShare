@@ -23,6 +23,7 @@
 
         <form class="form-horizontal" role="form" method="POST"
               enctype="multipart/form-data" autocomplete="off" id="download">
+	    {% csrf_token %}
             <div class="input-group form-group" id="alias-input-gp" style="padding-left: 10%; padding-bottom: 0">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                 <input type="password" class="form-control" id="passwd" name="passwd"
