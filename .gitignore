@@ -9,5 +9,6 @@ data/
 .idea/
 .vscode/
 pwShare/settings.py
+org/
 
 *.sqlite3
