@@ -18,7 +18,7 @@ def refer_limitation(func):
     def decorator(request, *args, **kwargs):
         refer = request.META.get('HTTP_REFERER', '')
         hostname = urlparse(refer).netloc
-        print(REFER_PROTECTOR.records, hostname)
+
         if len(hostname) == 0:
             pass
         elif hostname in REFER_PROTECTOR.WHITE_LIST:
@@ -41,15 +41,9 @@ def refer_limitation(func):
     return decorator
 
 
-# i, l, 1, 0, o
 def passwd_generator(length):
-    charset = list(range(48, 58)) + list(range(65, 91)) + list(range(97, 122)) # 0-9, a-z, A-Z
-    confused = [48, 49, 73, 76, 79, 105, 108, 111]
-    list(map(charset.remove, confused))
-    passwd = ''
-    for i in range(length):
-        passwd += chr(sample(charset, 1)[0])
-    return passwd
+    charset = list('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz')
+    return ''.join(sample(charset, length))
 
 
 def save_file(file):
@@ -102,6 +96,8 @@ def verify_recaptcha(func):
                     request.recaptcha_is_valid = True
                 else:
                     request.recaptcha_is_valid = False
+            else:
+                request.recaptcha_is_valid = False
 
         return func(request, *args, **kwargs)
     return decorator

@@ -49,7 +49,7 @@ def upload(request):
         res_dict['revoked_pub'] = True
 
     if request.method == 'POST':
-        if not request.recaptcha_is_valid and False:
+        if not request.recaptcha_is_valid:
             return JsonResponse(dict(status=False, data="Invalid re-captcha token! DO NOT try to scrap my site!"))
 
         file = request.FILES.get('file')
